@@ -1,8 +1,5 @@
 package com.artsgard.socioweather;
 
-import com.artsgard.socioweather.SocioWeatherController;
-import com.artsgard.socioweather.SocioWeatherDTO;
-import com.artsgard.socioweather.SocioWeatherExternalService;
 import java.util.ArrayList;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
@@ -39,19 +35,14 @@ public class SocioWeatherControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
     
-    @Autowired
-    private JacksonTester<SocioWeatherDTO> jsonSocioWeather;
-    
-    @Autowired
-    private JacksonTester<List<SocioWeatherDTO>> jsonSociosWeather;
-    
     private SocioWeatherDTO socioWeather;
-    private List<SocioWeatherDTO> reports;
 
     @BeforeEach
     public void setup() {
-        reports = new ArrayList();
-       
+        List<SocioWeatherDTO.WeatherType> tagList = new ArrayList();
+        tagList.add(SocioWeatherDTO.WeatherType.COLD);
+        tagList.add(SocioWeatherDTO.WeatherType.STORMY);
+        socioWeather = new SocioWeatherDTO("description", "main", "temp", "tempMax", "tempMin", "humidity", "pressure", "clouds", "wind", "city", tagList);
     }
  
     @Test
@@ -59,10 +50,10 @@ public class SocioWeatherControllerTest {
        given(service.getReport(any(String.class)))
                 .willReturn(socioWeather);
 
-        ResponseEntity<SocioWeatherDTO[]> socioResponse = restTemplate
-                .getForEntity("/London", SocioWeatherDTO[].class);
+        ResponseEntity<SocioWeatherDTO> socioResponse = restTemplate
+                .getForEntity("/London", SocioWeatherDTO.class);
 
         assertThat(socioResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(socioResponse.getBody().equals(reports));
+        assertThat(socioResponse.getBody().equals(socioWeather));
     }
 }

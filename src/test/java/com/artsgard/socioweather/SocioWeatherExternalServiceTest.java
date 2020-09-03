@@ -25,6 +25,6 @@ public class SocioWeatherExternalServiceTest {
 
     @Test
     public void testGetWeatherTagList() {
-        
+        //todo
     }
 }
