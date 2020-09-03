@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("")
-public class WeatherController {
+public class SocioWeatherController {
 
-    org.slf4j.Logger logger = LoggerFactory.getLogger(WeatherController.class);
+    org.slf4j.Logger logger = LoggerFactory.getLogger(SocioWeatherController.class);
 
     @Autowired
-    private WeatherExternalService service;
+    private SocioWeatherExternalService service;
     
     @GetMapping(path = "/{city}", produces = "application/json")
     public ResponseEntity<?> getReport(@PathVariable String city) throws JSONException {
-        WeatherDTO weather = service.getReport(city);
+        SocioWeatherDTO weather = service.getReport(city);
         if(weather != null) {
            return new ResponseEntity<>(weather, HttpStatus.OK);
        } else {

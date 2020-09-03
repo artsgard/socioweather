@@ -9,10 +9,11 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
@@ -21,20 +22,20 @@ import org.springframework.stereotype.Component;
  * @author artsgard
  */
 @Component
-public class WeatherExternalService {
+public class SocioWeatherExternalService {
 
     private org.slf4j.Logger logger;
 
-    public WeatherExternalService() {
-        logger = LoggerFactory.getLogger(WeatherExternalService.class);
+    public SocioWeatherExternalService() {
+        logger = LoggerFactory.getLogger(SocioWeatherExternalService.class);
     }
 
     private static final String URL_BASE = "http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=";
     private static final String TOKEN = "&APPID=5373a74b28442f4c6f5c69563b13dbb8";
 
-    private WeatherDTO dto;
+    private SocioWeatherDTO dto;
 
-    public WeatherDTO getReport(String city) throws JSONException {
+    public SocioWeatherDTO getReport(String city) throws JSONException {
         BufferedReader br = null;
         StringBuilder sb = null;
 
@@ -48,15 +49,16 @@ public class WeatherExternalService {
             while ((output = br.readLine()) != null) {
                 sb.append(output);
             }
-
+            System.out.println(sb.toString());
             JSONObject report = new JSONObject(sb.toString());
             JSONArray weatherArray = report.getJSONArray("weather");
             JSONObject weather = weatherArray.getJSONObject(0);
             JSONObject main = report.getJSONObject("main");
             JSONObject wind = report.getJSONObject("wind");
             JSONObject clouds = report.getJSONObject("clouds");
+            Object name = report.getString("name");
 
-            dto = new WeatherDTO();
+            dto = new SocioWeatherDTO();
 
             dto.setMain(weather.getString("main"));
             dto.setDescription(weather.getString("description"));
@@ -66,20 +68,23 @@ public class WeatherExternalService {
             dto.setHumidity(main.getString("humidity"));
             dto.setPressure(main.getString("pressure"));
             dto.setClouds(clouds.getString("all"));
-            dto.setWeatherType(WeatherDTO.WeatherType.WARM);
+            dto.setCity(name.toString());
+            List<SocioWeatherDTO.WeatherType> tagList = new ArrayList();
+            SocioWeatherDTO.WeatherType weatherTag = SocioWeatherDTO.WeatherType.WARM;
+            tagList.add(weatherTag);
+            dto.setWeatherTypeTachs(tagList);
 
         } catch (IOException ex) {
-            System.err.println("<Server IOException: " + ex);
-            logger.error("<Server IOException: " + ex);
+            System.err.println("HttpURLConnection IOException: City not found! " + ex);
+            logger.error("HttpURLConnection IOException: " + ex);
         } finally {
             connection.disconnect();
             try {
-
                 if (br != null) {
                     br.close();
                 }
             } catch (IOException ex) {
-                System.err.println("<Server IOException: " + ex);
+                System.err.println("Disconnect IOException: " + ex);
                 logger.error("<Server IOException: " + ex);
             }
         }
@@ -95,6 +100,7 @@ public class WeatherExternalService {
             try {
                 connection = (HttpURLConnection) serverAddress.openConnection(); //openConnection(proxy)
             } catch (IOException ex) {
+                System.err.println("HttpURLConnection2 IOException: " + ex);
                 logger.error("<Server IOException: " + ex);
                 return null;
             }
@@ -104,6 +110,7 @@ public class WeatherExternalService {
             try {
                 connection.setRequestMethod("GET");
             } catch (ProtocolException ex) {
+                System.err.println("RequestMethod GET IOException: " + ex);
                 logger.error("<Server IOException: " + ex);
                 return null;
             }
@@ -112,11 +119,13 @@ public class WeatherExternalService {
             try {
                 connection.connect();
             } catch (IOException ex) {
+                System.err.println("Connection Connect IOException: " + ex);
                 logger.error("<Server IOException: " + ex);
                 return null;
             }
             return connection;
         } catch (MalformedURLException ex) {
+            System.err.println("MalformedURLException: " + ex);
             logger.error("<Server IOException: " + ex);
             return null;
         }

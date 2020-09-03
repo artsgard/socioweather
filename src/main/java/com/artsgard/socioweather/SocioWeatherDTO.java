@@ -1,5 +1,6 @@
 package com.artsgard.socioweather;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
-public class WeatherDTO {
+public class SocioWeatherDTO {
     private String description;
     private String main;
     private String temp;
@@ -24,10 +25,11 @@ public class WeatherDTO {
     private String humidity;
     private String pressure;
     private String clouds;
+    private String city;
     
-     public enum WeatherType {
+    public enum WeatherType {
         RAINY, CLOUDY, COULD, SUNNY, WARM, HOT, FREEZING
     }
 
-    private WeatherType weatherType;
+    private List<WeatherType> weatherTypeTachs;
 }
