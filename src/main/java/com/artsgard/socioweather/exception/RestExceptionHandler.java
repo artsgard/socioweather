@@ -72,12 +72,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CityNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(CityNotFoundException rnfe, HttpServletRequest request) {
+    public ResponseEntity<?> handleCityNotFoundException(CityNotFoundException rnfe, HttpServletRequest request) {
 
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
         errorDetail.setStatus(HttpStatus.NOT_FOUND.value());
-        errorDetail.setTitle("Resource Not Found!");
+        errorDetail.setTitle("City Not Found!");
         errorDetail.setDetail(rnfe.getMessage());
         errorDetail.setDeveloperMessage(rnfe.getClass().getName());
 

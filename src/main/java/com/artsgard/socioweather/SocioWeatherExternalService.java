@@ -30,22 +30,17 @@ public class SocioWeatherExternalService {
         logger = LoggerFactory.getLogger(SocioWeatherExternalService.class);
     }
 
-    private static final String URL_BASE = "http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=";
+    private static final String URL_BASE = ""
+            + "http://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&q=";
     private static final String TOKEN = "&APPID=5373a74b28442f4c6f5c69563b13dbb8";
 
     private SocioWeatherDTO dto;
 
-    public HttpURLConnection getConnection(String urlString, String city) {
-        try {
-            URL url = new URL(urlString);
-            HttpURLConnection urlConnection = null;
-            urlConnection = create(url);
-            return urlConnection;
-            
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(SocioWeatherExternalService.class.getName()).log(Level.SEVERE, null, ex);
-            throw new CityNotFoundException("no city present with the name: " + city);
-        }
+    public HttpURLConnection getConnection(String urlString, String city) throws MalformedURLException {
+        URL url = new URL(urlString);
+        HttpURLConnection urlConnection = null;
+        urlConnection = create(url);
+        return urlConnection;
     }
 
     HttpURLConnection create(URL url) {
@@ -64,7 +59,7 @@ public class SocioWeatherExternalService {
         HttpURLConnection connection = null;
         try {
             String url = URL_BASE + city + TOKEN;
-            
+
             connection = getConnection(url, city);
             br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
             String output;
@@ -95,7 +90,7 @@ public class SocioWeatherExternalService {
             dto.setWeatherTypeTachs(getWeatherTagList(dto));
 
         } catch (IOException ex) {
-            System.err.println("HttpURLConnection IOException: City not found! " + ex);
+            System.err.println("IOException: City not found! " + ex);
             logger.error("HttpURLConnection IOException: " + ex);
             throw new CityNotFoundException("No city found with the name: " + city);
         } finally {
