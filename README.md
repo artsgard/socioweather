@@ -35,26 +35,31 @@ Testing is still "work in progress"
 
 This small Weather-Service provides a report per City of its current weather conditions. The service consults a external service called OpenWeather and has a single get-url inserting the city-name e.g.:
 
-	http://localhost:8083/Amsterdam
+	http://localhost:8083/Newfoundland
 	
 The service will return a json with the following fields:
 
-	public class SocioWeatherDTO {
-		private String description;
-		private String main;
-		private String temp;
-		private String tempMax;
-		private String tempMin;
-		private String humidity;
-		private String pressure;
-		private String clouds;
-		private String city;
-    
-		public enum WeatherType {
-			RAINY, CLOUDY, COULD, SUNNY, WARM, HOT, FREEZING
-		}
+	{
+		"description": "few clouds",
+		"main": "Clouds",
+		"temp": "14.9",
+		"tempMax": "14.9",
+		"tempMin": "14.9",
+		"humidity": "58",
+		"pressure": "1015",
+		"clouds": "22",
+		"wind": "4.58",
+		"city": "Newfoundland",
+		"weatherTypeTachs": [
+			"COLD",
+			"CLOUDY"
+		]
+	}
 
-		private List<WeatherType> weatherTypeTachs;
+the weather tags:
+
+	public enum WeatherType {
+		RAINY, SNOWING, CLOUDY, COLD, SUNNY, WARM, HOT, FREEZING, CLEAR, MISTY, WINDY, STORMY, DANGEROUS_STORM
 	}
 	
 When no city is found it will throw a CityNotFound exception, to be communicated to the front.
