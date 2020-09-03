@@ -61,5 +61,5 @@ When no city is found it will throw a CityNotFound exception, to be communicated
 
 The city-field could be used to provide info/ pictures of that selected city. And the list of weather tags may have a similar function.
 
-There is little to say concerning this small Springboot REST-application. There will be some exception handling concerning the external service connection. And there are only view test-units of which the getWeatherTagList methos is the most interesting one.
+There is little to say concerning this small Springboot REST-application. There will be some exception handling concerning the external service connection. And there are only view test-units of which the testGetWeatherTagList method is the most interesting one.
 

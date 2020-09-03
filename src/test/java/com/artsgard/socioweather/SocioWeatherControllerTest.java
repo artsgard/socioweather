@@ -1,4 +1,4 @@
-package com.artsgard.socioweather.controller;
+package com.artsgard.socioweather;
 
 import com.artsgard.socioweather.SocioWeatherController;
 import com.artsgard.socioweather.SocioWeatherDTO;

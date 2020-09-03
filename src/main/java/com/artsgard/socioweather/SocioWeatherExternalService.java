@@ -1,5 +1,6 @@
 package com.artsgard.socioweather;
 
+import com.artsgard.socioweather.exception.CityNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -69,14 +70,12 @@ public class SocioWeatherExternalService {
             dto.setPressure(main.getString("pressure"));
             dto.setClouds(clouds.getString("all"));
             dto.setCity(name.toString());
-            List<SocioWeatherDTO.WeatherType> tagList = new ArrayList();
-            SocioWeatherDTO.WeatherType weatherTag = SocioWeatherDTO.WeatherType.WARM;
-            tagList.add(weatherTag);
-            dto.setWeatherTypeTachs(tagList);
+            dto.setWeatherTypeTachs(getWeatherTagList(dto));
 
         } catch (IOException ex) {
             System.err.println("HttpURLConnection IOException: City not found! " + ex);
             logger.error("HttpURLConnection IOException: " + ex);
+            throw new CityNotFoundException("No city found with the name: " + city);
         } finally {
             connection.disconnect();
             try {
@@ -129,5 +128,13 @@ public class SocioWeatherExternalService {
             logger.error("<Server IOException: " + ex);
             return null;
         }
+    }
+    
+    private List<SocioWeatherDTO.WeatherType> getWeatherTagList(SocioWeatherDTO weatherDto) {
+        List<SocioWeatherDTO.WeatherType> tagList = new ArrayList();
+        SocioWeatherDTO.WeatherType weatherTag = SocioWeatherDTO.WeatherType.WARM;
+        tagList.add(weatherTag);
+        
+        return tagList;
     }
 }

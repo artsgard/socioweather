@@ -71,8 +71,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(manve, errorDetail, headers, status, request);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException rnfe, HttpServletRequest request) {
+    @ExceptionHandler(CityNotFoundException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(CityNotFoundException rnfe, HttpServletRequest request) {
 
         ErrorDetail errorDetail = new ErrorDetail();
         errorDetail.setTimeStamp(new Date().getTime());
