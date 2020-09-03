@@ -5,13 +5,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -36,6 +35,28 @@ public class SocioWeatherExternalService {
 
     private SocioWeatherDTO dto;
 
+    public HttpURLConnection getConnection(String urlString, String city) {
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection urlConnection = null;
+            urlConnection = create(url);
+            return urlConnection;
+            
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(SocioWeatherExternalService.class.getName()).log(Level.SEVERE, null, ex);
+            throw new CityNotFoundException("no city present with the name: " + city);
+        }
+    }
+
+    HttpURLConnection create(URL url) {
+        try {
+            return (HttpURLConnection) url.openConnection();
+        } catch (IOException ex) {
+            Logger.getLogger(SocioWeatherExternalService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public SocioWeatherDTO getReport(String city) throws JSONException {
         BufferedReader br = null;
         StringBuilder sb = null;
@@ -43,7 +64,8 @@ public class SocioWeatherExternalService {
         HttpURLConnection connection = null;
         try {
             String url = URL_BASE + city + TOKEN;
-            connection = getConnection(url);
+            
+            connection = getConnection(url, city);
             br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
             String output;
             sb = new StringBuilder();
@@ -60,7 +82,6 @@ public class SocioWeatherExternalService {
             Object name = report.getString("name");
 
             dto = new SocioWeatherDTO();
-
             dto.setMain(weather.getString("main"));
             dto.setDescription(weather.getString("description"));
             dto.setTemp(main.getString("temp"));
@@ -91,60 +112,20 @@ public class SocioWeatherExternalService {
         return dto;
     }
 
-    private HttpURLConnection getConnection(String url) {
-        try {
-            URL serverAddress = new URL(url);
-
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("some proxy here", 8080));
-            HttpURLConnection connection;
-            try {
-                connection = (HttpURLConnection) serverAddress.openConnection(); //openConnection(proxy)
-            } catch (IOException ex) {
-                System.err.println("HttpURLConnection2 IOException: " + ex);
-                logger.error("<Server IOException: " + ex);
-                return null;
-            }
-
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            try {
-                connection.setRequestMethod("GET");
-            } catch (ProtocolException ex) {
-                System.err.println("RequestMethod GET IOException: " + ex);
-                logger.error("<Server IOException: " + ex);
-                return null;
-            }
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setReadTimeout(10000);
-            try {
-                connection.connect();
-            } catch (IOException ex) {
-                System.err.println("Connection Connect IOException: " + ex);
-                logger.error("<Server IOException: " + ex);
-                return null;
-            }
-            return connection;
-        } catch (MalformedURLException ex) {
-            System.err.println("MalformedURLException: " + ex);
-            logger.error("<Server IOException: " + ex);
-            return null;
-        }
-    }
-
     private List<SocioWeatherDTO.WeatherType> getWeatherTagList(SocioWeatherDTO weatherDto) {
         List<SocioWeatherDTO.WeatherType> tagList = new ArrayList();
 
-        int temp = (int) Double.parseDouble(weatherDto.getTemp()); 
-        if (temp < 0) {
+        int temp = (int) Double.parseDouble(weatherDto.getTemp());
+        if (temp <= 0) {
             tagList.add(SocioWeatherDTO.WeatherType.FREEZING);
-        } else if (temp  > 0 && temp < 18) {
+        } else if (temp > 0 && temp <= 17) {
             tagList.add(SocioWeatherDTO.WeatherType.COLD);
-        } else if (temp  > 18 && temp < 23) {
+        } else if (temp > 17 && temp <= 23) {
             tagList.add(SocioWeatherDTO.WeatherType.WARM);
-        } else if (temp  > 23) {
+        } else if (temp > 23) {
             tagList.add(SocioWeatherDTO.WeatherType.HOT);
         }
-        
+
         String main = weatherDto.getMain();
         if (main.equalsIgnoreCase("Rain")) {
             tagList.add(SocioWeatherDTO.WeatherType.RAINY);
@@ -159,15 +140,15 @@ public class SocioWeatherExternalService {
         } else if (main.equalsIgnoreCase("Mist")) {
             tagList.add(SocioWeatherDTO.WeatherType.MISTY);
         }
-        
-        double wind = Double.parseDouble(weatherDto.getWind()); 
+
+        double wind = Double.parseDouble(weatherDto.getWind());
         if (wind > 10 && wind > 20) {
             tagList.add(SocioWeatherDTO.WeatherType.WINDY);
         } else if (wind > 20 && wind > 30) {
             tagList.add(SocioWeatherDTO.WeatherType.STORMY);
         } else if (wind > 30) {
             tagList.add(SocioWeatherDTO.WeatherType.DANGEROUS_STORM);
-        } 
+        }
 
         return tagList;
     }
