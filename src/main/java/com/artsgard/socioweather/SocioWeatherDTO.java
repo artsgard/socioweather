@@ -25,10 +25,11 @@ public class SocioWeatherDTO {
     private String humidity;
     private String pressure;
     private String clouds;
+    private String wind;
     private String city;
     
     public enum WeatherType {
-        RAINY, CLOUDY, COULD, SUNNY, WARM, HOT, FREEZING
+        RAINY, SNOWING, CLOUDY, COLD, SUNNY, WARM, HOT, FREEZING, CLEAR, MISTY, WINDY, STORMY, DANGEROUS_STORM
     }
 
     private List<WeatherType> weatherTypeTachs;

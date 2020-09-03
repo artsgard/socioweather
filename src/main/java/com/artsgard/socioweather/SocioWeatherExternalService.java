@@ -70,6 +70,7 @@ public class SocioWeatherExternalService {
             dto.setPressure(main.getString("pressure"));
             dto.setClouds(clouds.getString("all"));
             dto.setCity(name.toString());
+            dto.setWind(wind.getString("speed"));
             dto.setWeatherTypeTachs(getWeatherTagList(dto));
 
         } catch (IOException ex) {
@@ -129,12 +130,45 @@ public class SocioWeatherExternalService {
             return null;
         }
     }
-    
+
     private List<SocioWeatherDTO.WeatherType> getWeatherTagList(SocioWeatherDTO weatherDto) {
         List<SocioWeatherDTO.WeatherType> tagList = new ArrayList();
-        SocioWeatherDTO.WeatherType weatherTag = SocioWeatherDTO.WeatherType.WARM;
-        tagList.add(weatherTag);
+
+        int temp = (int) Double.parseDouble(weatherDto.getTemp()); 
+        if (temp < 0) {
+            tagList.add(SocioWeatherDTO.WeatherType.FREEZING);
+        } else if (temp  > 0 && temp < 18) {
+            tagList.add(SocioWeatherDTO.WeatherType.COLD);
+        } else if (temp  > 18 && temp < 23) {
+            tagList.add(SocioWeatherDTO.WeatherType.WARM);
+        } else if (temp  > 23) {
+            tagList.add(SocioWeatherDTO.WeatherType.HOT);
+        }
         
+        String main = weatherDto.getMain();
+        if (main.equalsIgnoreCase("Rain")) {
+            tagList.add(SocioWeatherDTO.WeatherType.RAINY);
+        } else if (main.equalsIgnoreCase("Clouds")) {
+            tagList.add(SocioWeatherDTO.WeatherType.CLOUDY);
+        } else if (main.equalsIgnoreCase("Clear")) {
+            tagList.add(SocioWeatherDTO.WeatherType.CLEAR);
+        } else if (main.equalsIgnoreCase("Snow")) {
+            tagList.add(SocioWeatherDTO.WeatherType.SNOWING);
+        } else if (main.contains("Sun")) {
+            tagList.add(SocioWeatherDTO.WeatherType.SUNNY);
+        } else if (main.equalsIgnoreCase("Mist")) {
+            tagList.add(SocioWeatherDTO.WeatherType.MISTY);
+        }
+        
+        double wind = Double.parseDouble(weatherDto.getWind()); 
+        if (wind > 10 && wind > 20) {
+            tagList.add(SocioWeatherDTO.WeatherType.WINDY);
+        } else if (wind > 20 && wind > 30) {
+            tagList.add(SocioWeatherDTO.WeatherType.STORMY);
+        } else if (wind > 30) {
+            tagList.add(SocioWeatherDTO.WeatherType.DANGEROUS_STORM);
+        } 
+
         return tagList;
     }
 }
