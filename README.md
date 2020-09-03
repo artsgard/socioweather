@@ -60,7 +60,7 @@ the weather tags:
 
 	public enum WeatherType {
 		RAINY, SNOWING, CLOUDY, COLD, SUNNY, WARM, HOT, FREEZING, CLEAR, MISTY, WINDY, STORMY, DANGEROUS_STORM
-    	}
+	}
 	
 When no city is found it will throw a CityNotFound exception, to be communicated to the front.
 
