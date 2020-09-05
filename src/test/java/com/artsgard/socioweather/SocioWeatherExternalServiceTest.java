@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+//https://stackoverflow.com/questions/55070105/mockito-unit-test-with-httpurlconnection
+//https://stackoverflow.com/questions/33032918/testing-url-and-urlconnection
 
 @ExtendWith(MockitoExtension.class)
 public class SocioWeatherExternalServiceTest {

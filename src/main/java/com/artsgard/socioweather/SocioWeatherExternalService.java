@@ -36,7 +36,7 @@ public class SocioWeatherExternalService {
 
     private SocioWeatherDTO dto;
 
-    public HttpURLConnection getConnection(String urlString, String city) throws MalformedURLException {
+    public HttpURLConnection getConnection(String urlString) throws MalformedURLException {
         URL url = new URL(urlString);
         HttpURLConnection urlConnection = null;
         urlConnection = create(url);
@@ -60,7 +60,7 @@ public class SocioWeatherExternalService {
         try {
             String url = URL_BASE + city + TOKEN;
 
-            connection = getConnection(url, city);
+            connection = getConnection(url);
             br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
             String output;
             sb = new StringBuilder();
